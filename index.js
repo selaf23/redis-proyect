@@ -7,7 +7,6 @@ const CONFIG = {
   PORT: process.env.PORT || 3000,
   REDIS_URL: process.env.REDIS_URL || "redis://localhost:6379",
   SESSION_TTL: parseInt(process.env.SESSION_TTL, 10) || 3600,
-  CACHE_TTL: parseInt(process.env.CACHE_TTL, 10) || 300,
 };
 
 const redisClient = createClient({
@@ -26,14 +25,11 @@ app.use((req, _res, next) => {
   next();
 });
 
-
 app.post("/session", async (req, res) => {
   const { userId, name, role } = req.body;
 
   if (!userId || !name || !role) {
-    return res
-      .status(400)
-      .json({ error: "userId, nombre y rol es requerido" });
+    return res.status(400).json({ error: "userId, nombre y rol es requerido" });
   }
 
   const key = `session:${userId}`;
@@ -70,7 +66,6 @@ app.get("/session/:id", async (req, res) => {
   }
 });
 
-
 app.put("/session/:id", async (req, res) => {
   try {
     const key = `session:${req.params.id}`;
@@ -98,7 +93,6 @@ app.put("/session/:id", async (req, res) => {
   }
 });
 
-
 app.delete("/session/:id", async (req, res) => {
   try {
     const deleted = await req.redis.del(`session:${req.params.id}`);
@@ -122,7 +116,7 @@ app.get("/productos", async (_req, res) => {
     return res.json({ source: "db", data });
   } catch (err) {
     console.error("[GET /productos]", err);
-    return res.status(500).json({ error: "error para fetch productos" });
+    return res.status(500).json({ error: "error para obtener productos" });
   }
 });
 
