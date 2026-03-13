@@ -26,17 +26,14 @@ app.use((req, _res, next) => {
   next();
 });
 
-/**
- * POST /session
- * Body: { userId, name, role }
- */
+
 app.post("/session", async (req, res) => {
   const { userId, name, role } = req.body;
 
   if (!userId || !name || !role) {
     return res
       .status(400)
-      .json({ error: "userId, name and role are required" });
+      .json({ error: "userId, nombre y rol es requerido" });
   }
 
   const key = `session:${userId}`;
@@ -54,43 +51,38 @@ app.post("/session", async (req, res) => {
     return res.status(201).json({ ok: true, key });
   } catch (err) {
     console.error("[POST /session]", err);
-    return res.status(500).json({ error: "Failed to create session" });
+    return res.status(500).json({ error: "error crear sesion" });
   }
 });
 
-/**
- * GET /session/:id
- */
 app.get("/session/:id", async (req, res) => {
   try {
     const session = await req.redis.hGetAll(`session:${req.params.id}`);
 
     if (!session || Object.keys(session).length === 0) {
-      return res.status(404).json({ error: "Session not found" });
+      return res.status(404).json({ error: "Session no encontrada" });
     }
 
     return res.json(session);
   } catch (err) {
     console.error("[GET /session/:id]", err);
-    return res.status(500).json({ error: "Failed to fetch session" });
+    return res.status(500).json({ error: "error para fetch sesion" });
   }
 });
 
-/**
- * PUT /session/:id
- */
+
 app.put("/session/:id", async (req, res) => {
   try {
     const key = `session:${req.params.id}`;
     const exists = await req.redis.exists(key);
 
     if (!exists) {
-      return res.status(404).json({ error: "Session not found" });
+      return res.status(404).json({ error: "Sesion no encontrada" });
     }
 
     const fields = req.body;
     if (!fields || Object.keys(fields).length === 0) {
-      return res.status(400).json({ error: "No fields provided to update" });
+      return res.status(400).json({ error: "no hay cambios para modificar" });
     }
 
     const sanitized = Object.fromEntries(
@@ -102,26 +94,21 @@ app.put("/session/:id", async (req, res) => {
     return res.json({ ok: true });
   } catch (err) {
     console.error("[PUT /session/:id]", err);
-    return res.status(500).json({ error: "Failed to update session" });
+    return res.status(500).json({ error: "no se pudo actualizar sesion" });
   }
 });
 
-/**
- * DELETE /session/:id
- */
+
 app.delete("/session/:id", async (req, res) => {
   try {
     const deleted = await req.redis.del(`session:${req.params.id}`);
     return res.json({ deleted: deleted === 1 });
   } catch (err) {
     console.error("[DELETE /session/:id]", err);
-    return res.status(500).json({ error: "Failed to delete session" });
+    return res.status(500).json({ error: "error para eliminar sesion" });
   }
 });
 
-/**
- * GET /productos
- */
 app.get("/productos", async (_req, res) => {
   try {
     await new Promise((r) => setTimeout(r, 300));
@@ -135,7 +122,7 @@ app.get("/productos", async (_req, res) => {
     return res.json({ source: "db", data });
   } catch (err) {
     console.error("[GET /productos]", err);
-    return res.status(500).json({ error: "Failed to fetch productos" });
+    return res.status(500).json({ error: "error para fetch productos" });
   }
 });
 
@@ -147,7 +134,7 @@ async function start() {
       console.log(`[Server] Running on http://localhost:${CONFIG.PORT}`);
     });
   } catch (err) {
-    console.error("[Server] Failed to start:", err.message);
+    console.error("[Server] error para iniciar:", err.message);
   }
 }
 
